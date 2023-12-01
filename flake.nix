@@ -15,15 +15,24 @@
             inherit system;
             overlays = [rust-overlay.overlays.default];
         };
-        toolchain = pkgs.rust-bin.fromRustupToolchainFile ./toolchain.toml;
+        toolchain = pkgs.rust-bin.fromRustupToolchainFile ./env/toolchain.toml;
     in {
         devShells.${system}.default = pkgs.mkShell {
+            
+            # Packages (duh)
             packages = [
                 toolchain
 
-                # Unwrapped version due to guide telling me i want it
+                # Unwrapped version because the guide told me i want it
                 pkgs.rust-analyzer-unwrapped
             ];
+
+            # Env variables (also duh)
+            env = {
+                CARGO_MANIFEST_DIR = "./env";
+                CLIPPY_CONF_DIR = "./env";
+                RUST_BACKTRACE = "full";
+            };
         };
     };
 }
