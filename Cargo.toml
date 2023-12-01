@@ -1,5 +1,5 @@
 [package]
-name = "AdventCalendar"
+name = "advent_calendar"
 version = "0.1.0"
 edition = "2021"
 description = "My Advent of Code stuff"
@@ -9,7 +9,7 @@ readme = "README.md"
 license-file = "LICENSE"
 
 [build]
-target-dir = "build"
+target-dir = "../build"
 rustflags = [
     "--all-targets",
     "--verbose",
