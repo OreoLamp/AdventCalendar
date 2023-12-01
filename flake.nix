@@ -15,7 +15,7 @@
             inherit system;
             overlays = [rust-overlay.overlays.default];
         };
-        toolchain = pkgs.rust-bin.fromRustupToolchainFile ./env/toolchain.toml;
+        toolchain = pkgs.rust-bin.fromRustupToolchainFile ./toolchain.toml;
     in {
         devShells.${system}.default = pkgs.mkShell {
             
