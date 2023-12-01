@@ -28,10 +28,10 @@
             ];
 
             # Environment variables
-            RUST_SRC_PATH = "${toolchain}/lib/rustlib/src/rust/library";
-            CARGO_MANIFEST_DIR = "./env";
-            CLIPPY_CONF_DIR = "./env";
-            RUST_BACKTRACE = "full";
+            # RUST_SRC_PATH = "${toolchain}/lib/rustlib/src/rust/library";
+            # CARGO_MANIFEST_DIR = "./env";
+            # CLIPPY_CONF_DIR = "./env";
+            # RUST_BACKTRACE = "full";
         };
     };
 }
