@@ -24,15 +24,14 @@
                 toolchain
 
                 # Unwrapped version because the guide told me i want it
-                pkgs.rust-analyzer-unwrapped
+                # pkgs.rust-analyzer-unwrapped
             ];
 
-            # Env variables (also duh)
-            env = {
-                CARGO_MANIFEST_DIR = "./env";
-                CLIPPY_CONF_DIR = "./env";
-                RUST_BACKTRACE = "full";
-            };
+            # Environment variables
+            # RUST_SRC_PATH = "${toolchain}/lib/rustlib/src/rust/library";
+            # CARGO_MANIFEST_DIR = "./env";
+            # CLIPPY_CONF_DIR = "./env";
+            # RUST_BACKTRACE = "full";
         };
     };
 }
