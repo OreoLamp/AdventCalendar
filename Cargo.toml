@@ -17,4 +17,3 @@ rustflags = [
 ]
 
 [dependencies]
-memchr = "2.6.4"
