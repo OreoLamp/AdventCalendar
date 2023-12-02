@@ -9,7 +9,6 @@ readme = "README.md"
 license-file = "LICENSE"
 
 [build]
-target-dir = "../build"
 rustflags = [
     "--all-targets",
     "--verbose",

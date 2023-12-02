@@ -1,34 +1,49 @@
 #![deny(clippy::all, clippy::pedantic, clippy::nursery)]
 #![feature(pattern)]
 
-extern crate alloc;
-use std::env;
-use std::fs;
-use alloc::str::pattern::Pattern;
 
 fn main() {
-    let args: &String = &env::args().collect::<Vec<String>>()[1];
-    let input: &str = &fs::read_to_string(args).expect("Unreadable file");
-    let digit_chars: [char; 10] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    // Input arguments are the path to the file, who knows why it's borrowed
+    let args: &String = &std::env::args().collect::<Vec<String>>()[1];
+
+    // Read the file into a string all at once. Bad for big files, but this is small enough.
+    let input: &str = &std::fs::read_to_string(args).expect("Unreadable file");
+
+    // Split into lines, and collect to a vector because otherwise it causes issues later
     let lines: Vec<&str> = input.lines().collect::<Vec<&str>>();
-    // This is actually disgusting, but to be fair, 98% of this is type annotations
-    let digit_options = lines.iter().map(|line: &&str| -> (Option<usize>, Option<usize>) 
-    {digit_finder(line, digit_chars)})
-    .collect::<Vec<(Option<usize>, Option<usize>)>>();
+
+    // Get the indecies of the digits, but as options (since they might not be there)
+    let digit_options  = 
+        lines.iter().map(|line: &&str| 
+        -> (Option<usize>, Option<usize>) {digit_finder(line)});
+
+    // Get the actual numbers for each line, so unwrap the options and make a number out of them
+    let numbers = std::iter::zip(lines.iter(), digit_options)
+        .map(|(line, indecies)| {number_from_digits(line, &indecies)});
+
+    // Calculate the sum, using fold because sum for some reason can't convert types for me...
+    let sum: &u32 = &numbers.fold(0, |acc: u32, x: u8| acc + u32::from(x));
+    println!("{sum}");
 }
 
 
 #[allow(clippy::inline_always)]
 #[inline(always)]
-fn digit_finder(input: &str, pats: Pattern) -> (Option<usize>, Option<usize>) {
-    let tens: Option<usize> = input.find(pats);
-    let ones: Option<usize> = input.rfind(pats);
+fn digit_finder(input: &str) -> (Option<usize>, Option<usize>) {
+    let digit_chars: [char; 10] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    let tens: Option<usize> = input.find(digit_chars);
+    let ones: Option<usize> = input.rfind(digit_chars);
     (tens, ones)
 }
 
 
 #[allow(clippy::inline_always)]
 #[inline(always)]
-fn number_constructor(){
-
+fn number_from_digits(line: &str, indecies: &(Option<usize>, Option<usize>)) -> u8 {
+    // So, basically, subtracting 48 from the byte converts UTF-8 / ASCII digits to the
+    // int values of their respective characters lmao
+    // Then just multiply the first one by 10 and add the second one to it
+    // Converting via rusts internal things would be slow as balls lol
+    (line.as_bytes()[indecies.0.unwrap()] - 48) * 10 + 
+    (line.as_bytes()[indecies.1.unwrap()]) - 48
 }
