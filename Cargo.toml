@@ -8,11 +8,9 @@ homepage = "https://github.com/OreoLamp/AdventCalendar"
 readme = "README.md"
 license-file = "LICENSE"
 
-[build]
-rustflags = [
-    "--all-targets",
-    "--verbose",
-    "-C debuginfo=2 instrument_coverage linker-flavor=ld.lld linker-plugin-lto=yes lto=yes opt-level=3 prefer-dynamic remark=all strip=symbols target-cpu=native",
-]
-
 [dependencies]
+aho-corasick = "1.1.2"
+
+[[bin]]
+name = "advent_calendar"
+path = "src/main.rs"
