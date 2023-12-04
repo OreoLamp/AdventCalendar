@@ -1,4 +1,6 @@
-pub fn day1pt1(filepath: &str) -> i32 {
+pub fn day1pt1(args: Vec<&str>) -> i32 {
+    let filepath: &str = args[0];
+
     // Read the file into a string all at once. Bad for big files, but this is small enough.
     let input: &str = &std::fs::read_to_string(filepath).expect("Unreadable file");
 
@@ -16,7 +18,7 @@ pub fn day1pt1(filepath: &str) -> i32 {
 
     // Calculate the sum, using fold because sum for some reason can't convert types for me...
     let sum: &i32 = &numbers.fold(0, |acc: i32, x: u8| acc + i32::from(x));
-    
+
     *sum
 }
 

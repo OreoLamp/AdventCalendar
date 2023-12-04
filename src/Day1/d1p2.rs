@@ -1,6 +1,7 @@
 use aho_corasick::AhoCorasick;
 
-pub fn day1pt2(filepath: &str) -> i32 {
+pub fn day1pt2(args: Vec<&str>) -> i32 {
+    let filepath: &str = args[0];
     // Digit pattern list for use in the finder
     const DIGITS: [&str; 20] = [
         "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", 
