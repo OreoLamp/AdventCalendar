@@ -1,15 +1,14 @@
-pub fn day1pt1(args: &[&str]) -> i32 {
-    let filepath: &str = args[0];
-
+pub fn part_1(path: &str) -> i32 {
     // Read the file into a string all at once. Bad for big files, but this is small enough.
-    let input: &str = &std::fs::read_to_string(filepath).expect("Unreadable file");
+    let input: &str = &std::fs::read_to_string(path).expect("Unreadable file");
 
     // Split into lines, and collect to a vector because otherwise it causes issues later
     let lines: Vec<&str> = input.lines().collect::<Vec<&str>>();
 
     // Get the indecies of the digits, but as options (since they might not be there)
     let digit_options = lines
-        .iter().map(|line: &&str| -> (usize, usize) { digit_finder(line) });
+        .iter()
+        .map(|line: &&str| -> (usize, usize) { digit_finder(line) });
 
     // Get the actual numbers for each line, so unwrap the options and make a number out of them
     let numbers = std::iter::zip(lines.iter(), digit_options)

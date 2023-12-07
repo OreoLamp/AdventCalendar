@@ -1,47 +1,51 @@
 use std::collections::HashMap;
 
-pub fn day2(args: &[&str]) -> i32 {
-    let filepath: &str = args[1];
 
+pub fn part_1(path: &str) -> i32 {
     // Read the file given in the arguments into a string all at once.
     // Bad for big files, but this is small enough.
-    let input: &str = &std::fs::read_to_string(filepath).expect("Unreadable file");
+    let input: &str = &std::fs::read_to_string(path).expect("Unreadable file");
 
-    // Parse the input to a more sane format
-    let games = input
-        // Split games from each other, each game is in it's own line
-        .lines()
-        // Parse the games into a sane format
-        .map(game_parser);
+    // Check which games are doable with 12 red, 13 green, and 14 blue cubes
+    let round_ids = game_processor(input).filter(|game: &(i32, HashMap<&str, i32>)| 
+        game.1["red"] <= 12 && 
+        game.1["green"] <= 13 &&
+        game.1["blue"] <= 14
+    );
 
-    // Get the highest amount of cubes of each color seen at once for each game
-    let most_of_colors = games.map(|game| (game.0, max_of(game.1.flat_map(max_of))));
+    // Sum up the game IDs, done with fold because I need to access the .0 of each round
+    round_ids.fold(0, |acc: i32, id: (i32, HashMap<&str, i32>)| acc + id.0)
+}
 
-    // Handle p1 and p2 differently
-    // The way I handle this is actually cursed lol
-    if args[0] == "p1" {
-        // Check which games are doable with 12 red, 13 green, and 14 blue cubes
-        let round_ids = most_of_colors.filter(|game: &(i32, HashMap<&str, i32>)| 
-            game.1["red"] <= 12 && 
-            game.1["green"] <= 13 &&
-            game.1["blue"] <= 14
-        );
+pub fn part_2(path: &str) -> i32 {
+    // Read the file given in the arguments into a string all at once.
+    // Bad for big files, but this is small enough.
+    let input: &str = &std::fs::read_to_string(path).expect("Unreadable file");
 
-        // And finally, sum up the game IDs, done with fold because I need to access the .0 of each round
-        round_ids.fold(0, |acc: i32, id: (i32, HashMap<&str, i32>)| acc + id.0)
+    // Get the power of each set of cubes
+    let powers = game_processor(input).map(
+       |game: (i32, HashMap<&str, i32>)| game.1.values().product::<i32>());
 
-    } else if args[0] == "p2" {
-        // Get the power of each set of cubes
-        let powers = most_of_colors.map(
-            |game: (i32, HashMap<&str, i32>)| game.1.values().product::<i32>());
-
-        powers.sum()
-    } else { panic!() }
+    powers.sum()
 }
 
 #[allow(clippy::inline_always)]
 #[inline(always)]
-fn game_parser(game: &str) -> (i32, impl Iterator<Item = impl Iterator<Item = (&str, i32)>>) {
+fn game_processor(games: &str) -> impl Iterator<Item = (i32, HashMap<&str, i32>)> {
+    // Parse the input to a more sane format
+    let games = games
+        // Split games from each other, each game is in it's own line
+        .lines()
+        // Parse the games into a sane format
+        .map(game_splitter);
+
+    // Get the highest amount of cubes of each color seen at once for each game
+    games.map(|game| (game.0, max_of(game.1.flat_map(max_of))))
+}
+
+#[allow(clippy::inline_always)]
+#[inline(always)]
+fn game_splitter(game: &str) -> (i32, impl Iterator<Item = impl Iterator<Item = (&str, i32)>>) {
     // Split the game ID from the rounds, as they need different kinds of parsing
     let wip: (&str, &str) = game.split_once(':').unwrap();
 
