@@ -1,4 +1,4 @@
-pub fn day1pt1(args: Vec<&str>) -> i32 {
+pub fn day1pt1(args: &[&str]) -> i32 {
     let filepath: &str = args[0];
 
     // Read the file into a string all at once. Bad for big files, but this is small enough.
@@ -9,8 +9,7 @@ pub fn day1pt1(args: Vec<&str>) -> i32 {
 
     // Get the indecies of the digits, but as options (since they might not be there)
     let digit_options = lines
-        .iter()
-        .map(|line: &&str| -> (usize, usize) { digit_finder(line) });
+        .iter().map(|line: &&str| -> (usize, usize) { digit_finder(line) });
 
     // Get the actual numbers for each line, so unwrap the options and make a number out of them
     let numbers = std::iter::zip(lines.iter(), digit_options)

@@ -1,7 +1,6 @@
 use aho_corasick::AhoCorasick;
 
-pub fn day1pt2(args: Vec<&str>) -> i32 {
-    let filepath: &str = args[0];
+pub fn day1pt2(args: &[&str]) -> i32 {
     // Digit pattern list for use in the finder
     const DIGITS: [&str; 20] = [
         "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", 
@@ -9,7 +8,7 @@ pub fn day1pt2(args: Vec<&str>) -> i32 {
     ];
 
     // Read the file into a string all at once. Bad for big files, but this is small enough.
-    let input: &str = &std::fs::read_to_string(filepath).expect("Unreadable file");
+    let input: &str = &std::fs::read_to_string(args[0]).expect("Unreadable file");
 
     // Split into lines, and collect to a vector because otherwise it causes issues later
     let lines: Vec<&str> = input.lines().collect::<Vec<&str>>();
@@ -21,10 +20,12 @@ pub fn day1pt2(args: Vec<&str>) -> i32 {
         .build(DIGITS)
         .unwrap();
 
+    // Gets the digits as numbers and flattens the result 
     let numbers = lines.iter()
-        .map(|line: &&str| digit_finder(line, &finder));
+        .flat_map(|line: &&str| -> [i32; 2] {digit_finder(line, &finder)});
 
-    numbers.flatten().sum()
+    
+    numbers.sum()
 }
 
 #[allow(clippy::inline_always)]
@@ -36,7 +37,7 @@ fn digit_finder(input: &str, finder: &AhoCorasick) -> [i32; 2] {
     // and it should be the correct number
     // Other than that this just constructs a vector of all the possible matches, overlaps included
     let all_matches: Vec<i32> = finder.find_overlapping_iter(input)
-        .map(|mat: aho_corasick::Match| mat.pattern().as_i32() % 10)
+        .map(|mat: aho_corasick::Match| -> i32 {mat.pattern().as_i32() % 10})
         .collect::<Vec<i32>>();
 
     // The fact that this is a list of length 2 is fucking stupid
