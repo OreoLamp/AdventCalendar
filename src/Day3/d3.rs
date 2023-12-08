@@ -2,7 +2,7 @@ pub fn part_1(path: &str) -> i32 {
     // Read the file into a string all at once. Bad for big files, but this is small enough.
     let input: &str = &std::fs::read_to_string(path).expect("Unreadable file");
 
-    // Assert ascii to make everything a lot easier 
+    // Assert ascii to make everything a lot easier
     // (and to make the compiler not do utf8 safety checks xd)
     assert!(input.is_ascii());
 
