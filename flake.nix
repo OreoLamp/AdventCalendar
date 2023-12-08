@@ -2,7 +2,7 @@
 {
     inputs = {
         nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-        nixpkgs-master.url = "github:NixOS/nixpkgs/master";
+        nixpkgs-master.url = "github:NixOS/nixpkgs";
         rust-overlay.url = "github:oxalica/rust-overlay";
     };
 
@@ -17,7 +17,7 @@
             inherit system;
             overlays = [rust-overlay.overlays.default];
         };
-        pkgs-master = import nixpkgs {
+        pkgs-master = import nixpkgs-master {
             inherit system;
             overlays = [rust-overlay.overlays.default];
         };
