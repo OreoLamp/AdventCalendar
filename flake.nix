@@ -9,6 +9,7 @@
     outputs = {
         self,
         nixpkgs,
+        nixpkgs-master,
         rust-overlay,
     }: let
         system = "x86_64-linux";
