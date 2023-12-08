@@ -1,3 +1,5 @@
+use core::str::from_utf8;
+
 pub fn part_1(path: &str) -> i32 {
     // Read the file into a string all at once. Bad for big files, but this is small enough.
     let input: &str = &std::fs::read_to_string(path).expect("Unreadable file");
@@ -8,38 +10,53 @@ pub fn part_1(path: &str) -> i32 {
 
     // A crap data type for a grid normally, but OK for this case
     // Since performance is completely irrelevant
-    let mut schem: Vec<Vec<u8>> = input
+    let schem: Vec<Vec<u8>> = input
         .lines()
         .map(|line: &str| line.as_bytes().to_vec())
         .collect::<Vec<Vec<u8>>>();
 
-    // Get (line, index) tuples (aka coordinates) for all number characters in the schematic
-    // This way of getting the indiecies of items in a vector is actually idiotic lol
-    let number_indecies = schem.iter().enumerate().flat_map(|(ln, line)| {
-        line.iter()
-            .enumerate()
-            .filter_map(move |(i, ch)| -> Option<(usize, usize)> {
-                if ch.wrapping_sub(48) < 10 {
-                    Some((ln, i))
-                } else {
-                    None
-                }
-            })
-    });
-
-    // Filter out all the number coords with a "symbol" next to them
-    // Symbol being anything that isn't a digit or a dot
-    let meaningless_numbers = number_indecies.filter(|(ln_origin, i_origin)| {
-        // Check the line with the number and its neighbors, but only if they exist
-        ((ln_origin - 1)..=(ln_origin + 1)).any(|ln: usize| schem.get(ln).is_some_and(|line: &Vec<u8>|
-            // Check the row with the number and its neighbors, but only if they exist
-            ((i_origin - 1)..=(i_origin + 1)).any(|index: usize| line.get(index).is_some_and(|ch: &u8|
-                // Check if the character at this position is an ASCII digit or a dot
-                // ASCII digits start from 48, and dot is 46, so this is relatively easy
-                (*ch).wrapping_sub(46) < 12 && (*ch).wrapping_sub(46) != 1
-            ))
+    // Get the coordinates of every number in the schematic, as well as the number of digits in them
+    // This way of getting the indiecies of items in a vector is actually idiotic but I don't know anything better
+    let number_indecies = schem.iter().enumerate().flat_map(|(line_number, line)| {
+        // Constructs a sliding-window iterator of length 4 for filter_map
+        line.windows(4).enumerate().filter_map(move |(index, slice)|
+        // Detects starts of numbers, only return something when one is found
+        (!slice[0].is_ascii_digit() && slice[1].is_ascii_digit()).then_some(
+            // Construct the (ln, i, len) tuple. First element of slice is the char before the first digit,
+            // so the number starts at i+1, len is calculated by checking at which index do the 
+            (line_number, index + 1, slice[1..].iter().position(|ch| !ch.is_ascii_digit()).unwrap_or(2) + 1)
         ))
     });
 
-    0
+    // Filter out coords with a "symbol" next to them
+    // Symbol being anything that isn't a digit or a dot
+    let part_number_positions = number_indecies.filter(|(line_number, index, length)| 
+        // Check the line that the number is on as well as its immediate neighbors
+        // Everything is done with get and is_some_and because get handles nonexisting indexes but returns options
+        (line_number.saturating_sub(1)..=line_number + 1).any(|ln| schem.get(ln).is_some_and(
+            // Check all the rows any digit of the number occupies as well as their immediate neighbors
+            |line| (index.saturating_sub(1)..=index + length + 1).any(|i| line.get(i).is_some_and(|ch|
+                // If any of them contain a character that isn't an ascii digit or a dot (46 in ascii), yeet them
+                !ch.is_ascii_digit() && *ch != 46)
+            )
+        )
+    )).collect::<Vec<_>>();
+
+    for pos in &part_number_positions {
+        println!("{}, {}, {}", pos.0, pos.1, pos.2);
+    }
+
+    // Calculate the sum of all relevant parts
+    let part_numbers = part_number_positions.iter().map(|(ln, i, len)| 
+        // from_utf8 makes an Option(&str) that can then be unwrapped and converted
+        from_utf8(&schem[*ln][*i..*i+*len]).unwrap().parse::<i32>().unwrap()
+    ).collect::<Vec<i32>>();
+
+    for part in &part_numbers {
+        println!("{part}");
+    }
+
+    part_numbers.iter().sum()
+
+
 }

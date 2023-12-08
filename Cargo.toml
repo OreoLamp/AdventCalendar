@@ -10,7 +10,8 @@ license-file = "LICENSE"
 
 [dependencies]
 aho-corasick = "1.1.2"
-regex = "1.10.2"
+evcxr = "0.16.0"
+evcxr_repl = "0.16.0"
 
 [[bin]]
 name = "advent_calendar"

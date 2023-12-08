@@ -28,9 +28,14 @@
             ];
 
             # Environment variables
-            RUST_SRC_PATH = "${toolchain}/lib/rustlib/src/rust/library";
-            CLIPPY_CONF_DIR = "./env";
-            RUST_BACKTRACE = "full";
+            shellHook = ''
+                export RUST_SRC_PATH = ${toolchain}/lib/rustlib/src/rust/library
+                export CARGO_HOME = $PWD/.cargo
+                export CARGO_INSTALL_ROOT = $PWD/.cargo
+                export CLIPPY_CONF_DIR = ./env
+                export RUST_BACKTRACE = full
+                export PATH $PATH:$PWD/.cargo/bin
+            '';
         };
     };
 }
