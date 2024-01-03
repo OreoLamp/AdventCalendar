@@ -1,8 +1,0 @@
-[profile.optimized]
-    inherits = "release"
-    opt-level = 3
-    debug = false
-    debug-assertions = false
-    overflow-checks = false
-    strip = true
-    lto = true
